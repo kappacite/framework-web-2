@@ -35,7 +35,6 @@
   transform: scale(1.1);
 }
 
-
 .background p {
   position: absolute;
   top: 50%;
