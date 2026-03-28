@@ -96,7 +96,7 @@ onMounted(async () => {
         </div>
         
         <div class="instructions" v-if="formattedInstructions.length > 0">
-          <h3>Instructions en français</h3>
+          <h3>Instructions</h3>
           <ul class="instructions-list">
             <li v-for="(step, index) in formattedInstructions" :key="index">{{ step }}</li>
           </ul>
@@ -196,8 +196,7 @@ p, span, li {
 
 .favorite-btn-detail {
   background: transparent;
-  border: 1px solid #d4af37;
-  border-radius: 50%;
+  border: none;
   width: 50px;
   height: 50px;
   font-size: 1.5rem;

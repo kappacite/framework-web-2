@@ -1,6 +1,7 @@
 <script setup>
 import apiClient from '@/api/apiClient.js'
 import IngredientCard from '@/components/IngredientCard.vue'
+import SearchComponent from '@/components/SearchComponent.vue'
 import { onMounted, ref, watch } from 'vue'
 import BackgroundImage from '@/components/BackgroundImage.vue'
 
@@ -76,6 +77,11 @@ const searchIngredients = async (query) => {
   }
 }
 
+const onSearchClick = () => {
+  clearTimeout(timer)
+  searchIngredients(searchQuery.value)
+}
+
 watch(searchQuery, (newVal) => {
   clearTimeout(timer)
   timer = setTimeout(() => {
@@ -91,14 +97,11 @@ onMounted(() => {
 <template>
   <BackgroundImage>Ingredients</BackgroundImage>
 
-  <div class="search-bar-container">
-    <input 
-      type="text" 
-      v-model="searchQuery" 
-      placeholder="Rechercher un ingrédient..." 
-      class="search-input"
-    />
-  </div>
+  <SearchComponent 
+    v-model="searchQuery" 
+    placeholder="Rechercher un ingrédient..." 
+    @search="onSearchClick" 
+  />
   
   <div v-if="!isReady && !errorMsg" class="status-container">
     <p class="loading">Chargement des ingrédients en cours...</p>
@@ -138,17 +141,25 @@ p {
   font-weight: 300;
 }
 
-.search-bar-container {
+.search-section {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   padding: 40px 20px 0 20px;
   width: 100%;
   box-sizing: border-box;
 }
 
-.search-input {
+.search-bar-container {
+  display: flex;
+  justify-content: center;
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
+  gap: 10px;
+}
+
+.search-input {
+  flex-grow: 1;
   padding: 15px 25px;
   border-radius: 30px;
   border: 1px solid #d4af37;
@@ -161,6 +172,58 @@ p {
 
 .search-input:focus {
   border-color: #f1c40f;
+}
+
+.search-button {
+  padding: 0 25px;
+  border-radius: 30px;
+  border: none;
+  background-color: #d4af37;
+  color: #0f0f0f;
+  font-family: 'Lato', sans-serif;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #f1c40f;
+}
+
+.filters-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-radio {
+  display: none;
+}
+
+.filter-label {
+  cursor: pointer;
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: 1px solid #d4af37;
+  color: #d4af37;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  user-select: none;
+}
+
+.filter-radio:checked + .filter-label {
+  background-color: #d4af37;
+  color: #0f0f0f;
+  font-weight: bold;
+}
+
+.filter-label:hover {
+  background-color: rgba(212, 175, 55, 0.1);
 }
 
 .ingredients {

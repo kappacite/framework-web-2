@@ -1,6 +1,8 @@
 <script setup>
 import apiClient from '@/api/apiClient.js'
 import CocktailCard from '@/components/CocktailCard.vue'
+import SearchComponent from '@/components/SearchComponent.vue'
+import { useFavoritesStore } from '@/stores/favorites.js'
 import { onMounted, ref, watch } from 'vue'
 import BackgroundImage from '@/components/BackgroundImage.vue'
 
@@ -9,46 +11,60 @@ const isReady = ref(false)
 const errorMsg = ref(null)
 
 const searchQuery = ref('')
+const currentFilter = ref('all')
+const favoritesStore = useFavoritesStore()
+
 let timer = null
-let defaultList = []
 
-const fetchDefaultCocktails = async () => {
-  errorMsg.value = null
-  isReady.value = false
-  try {
-    const response = await apiClient.get('filter.php?c=Cocktail')
-    let rawList = response.data.drinks.slice(0, 60)
-
-    defaultList = rawList
-    cocktails.value = rawList
-  } catch (error) {
-    errorMsg.value = "Impossible de charger les cocktails. Veuillez réessayer plus tard."
-    console.log(error)
-  } finally {
-    isReady.value = true
-  }
-}
-
-const searchCocktails = async (query) => {
-  if (query == '') {
-    cocktails.value = defaultList
-    errorMsg.value = null
-    return
-  }
-
+const executeSearch = async () => {
   isReady.value = false
   errorMsg.value = null
-  
+  cocktails.value = []
+
   try {
-    const response = await apiClient.get('search.php?s=' + query)
-    if (response.data.drinks) {
-      cocktails.value = response.data.drinks
+    if (currentFilter.value === 'favorite') {
+       let favs = favoritesStore.favorites
+       if (searchQuery.value.trim() !== '') {
+         favs = favs.filter(d => d.strDrink.toLowerCase().includes(searchQuery.value.toLowerCase()))
+       }
+       cocktails.value = favs
+       if (favs.length === 0) errorMsg.value = "Aucun cocktail favori trouvé."
+       isReady.value = true
+       return
+    }
+
+    if (searchQuery.value.trim() === '') {
+      let endpoint = 'filter.php?c=Cocktail'
+      if (currentFilter.value === 'alcoholic') endpoint = 'filter.php?a=Alcoholic'
+      else if (currentFilter.value === 'non-alcoholic') endpoint = 'filter.php?a=Non_Alcoholic'
+      
+      const response = await apiClient.get(endpoint)
+      if (response.data.drinks) {
+        cocktails.value = response.data.drinks.slice(0, 60)
+      } else {
+        errorMsg.value = "Aucun cocktail trouvé."
+      }
     } else {
-      cocktails.value = []
-      errorMsg.value = "Aucun cocktail trouvé."
+      const response = await apiClient.get('search.php?s=' + searchQuery.value)
+      if (response.data.drinks) {
+        let list = response.data.drinks
+        
+        if (currentFilter.value === 'alcoholic') {
+          list = list.filter(d => d.strAlcoholic === 'Alcoholic')
+        } else if (currentFilter.value === 'non-alcoholic') {
+          list = list.filter(d => d.strAlcoholic === 'Non alcoholic' || d.strAlcoholic === 'Optional alcohol')
+        }
+        
+        if (list.length > 0) {
+          cocktails.value = list
+        } else {
+          errorMsg.value = "Aucun cocktail trouvé."
+        }
+      } else {
+        errorMsg.value = "Aucun cocktail trouvé."
+      }
     }
   } catch (error) {
-    cocktails.value = []
     errorMsg.value = "Erreur de recherche."
     console.log(error)
   } finally {
@@ -56,29 +72,42 @@ const searchCocktails = async (query) => {
   }
 }
 
-watch(searchQuery, (newVal) => {
+watch(searchQuery, () => {
   clearTimeout(timer)
   timer = setTimeout(() => {
-    searchCocktails(newVal)
+    executeSearch()
   }, 500)
 })
 
+watch(currentFilter, () => {
+  executeSearch()
+})
+
 onMounted(() => {
-  fetchDefaultCocktails()
+  executeSearch()
 })
 </script>
 
 <template>
   <BackgroundImage>Cocktails</BackgroundImage>
   
-  <div class="search-bar-container">
-    <input 
-      type="text" 
-      v-model="searchQuery" 
-      placeholder="Rechercher un cocktail..." 
-      class="search-input"
-    />
-  </div>
+  <SearchComponent 
+    v-model="searchQuery" 
+    placeholder="Rechercher un cocktail..." 
+    @search="executeSearch" 
+  >
+    <input type="radio" id="alcoholic" name="type" value="alcoholic" class="filter-radio" v-model="currentFilter">
+    <label for="alcoholic" class="filter-label">Alcoolisé</label>
+    
+    <input type="radio" id="non-alcoholic" name="type" value="non-alcoholic" class="filter-radio" v-model="currentFilter">
+    <label for="non-alcoholic" class="filter-label">Non alcoolisé</label>
+    
+    <input type="radio" id="all" name="type" value="all" class="filter-radio" v-model="currentFilter">
+    <label for="all" class="filter-label">Tous</label>
+    
+    <input type="radio" id="favorite" name="type" value="favorite" class="filter-radio" v-model="currentFilter">
+    <label for="favorite" class="filter-label">Favoris</label>
+  </SearchComponent>
   
   <div v-if="!isReady && !errorMsg" class="status-container">
     <p class="loading">Chargement des cocktails en cours...</p>
@@ -116,31 +145,6 @@ h3 {
 p {
   font-family: 'Lato', sans-serif;
   font-weight: 300;
-}
-
-.search-bar-container {
-  display: flex;
-  justify-content: center;
-  padding: 40px 20px 0 20px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.search-input {
-  width: 100%;
-  max-width: 600px;
-  padding: 15px 25px;
-  border-radius: 30px;
-  border: 1px solid #d4af37;
-  background-color: #0f0f0f;
-  color: #fff;
-  font-family: 'Lato', sans-serif;
-  font-size: 1.1rem;
-  outline: none;
-}
-
-.search-input:focus {
-  border-color: #f1c40f;
 }
 
 .cocktails {
