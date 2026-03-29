@@ -47,6 +47,7 @@ onMounted(async () => {
           <span class="tag" v-if="ingredient.strType">{{ ingredient.strType }}</span>
           <span class="tag" v-if="ingredient.strAlcohol == 'Yes'">Alcoolisé</span>
           <span class="tag" v-if="ingredient.strAlcohol == 'No'">Sans alcool</span>
+          <span class="tag" v-if="ingredient.strABV !== null">{{ ingredient.strABV }}%</span>
         </div>
         
         <div class="description" v-if="ingredient.strDescription">

@@ -90,8 +90,9 @@ onMounted(async () => {
           </button>
         </div>
         <div class="tags">
-          <span class="tag">{{ cocktail.strAlcoholic }}</span>
           <span class="tag">{{ cocktail.strGlass }}</span>
+          <span class="tag" v-if="cocktail.strAlcoholic === 'Alcoholic'">Alcoolisé</span>
+          <span class="tag" v-else>Sans alcool</span>
         </div>
         
         <div class="instructions" v-if="formattedInstructions.length > 0">
@@ -105,7 +106,10 @@ onMounted(async () => {
           <h3>Ingrédients</h3>
           <ul>
             <li v-for="(ing, index) in ingredients" :key="index">
-              <span class="measure">{{ ing.measure }}</span> <span class="name">{{ ing.name }}</span>
+              <span class="measure">{{ ing.measure }}</span> 
+              <router-link style="text-decoration: none;":to="'/ingredients/' + encodeURIComponent(ing.name)">
+                <span class="name">{{ ing.name }}</span>
+              </router-link>
             </li>
           </ul>
         </div>

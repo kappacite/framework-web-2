@@ -22,6 +22,7 @@ const executeSearch = async () => {
   cocktails.value = []
 
   try {
+
     if (currentFilter.value === 'favorite') {
        let favs = favoritesStore.favorites
        if (searchQuery.value.trim() !== '') {
@@ -44,6 +45,7 @@ const executeSearch = async () => {
       } else {
         errorMsg.value = "Aucun cocktail trouvé."
       }
+      
     } else {
       const response = await apiClient.get('search.php?s=' + searchQuery.value)
       if (response.data.drinks) {

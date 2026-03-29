@@ -111,6 +111,7 @@ onMounted(() => {
   </div>
 
   <div v-else class="ingredients">
+    <!--- Pas possible le :id car c'est pas dans le retour de l'api. -->
     <router-link
       v-for="ingredient in ingredients"
       :key="ingredient['idIngredient']"
