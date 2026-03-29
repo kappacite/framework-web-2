@@ -8,7 +8,7 @@ const props = defineProps({
 
 <template>
   <div class="ingredient-card">
-    <div class="ingredient-image"><img :src="imageUrl" alt="Ingredient Image" /></div>
+    <div class="ingredient-image"><img :src="imageUrl" loading="lazy" alt="Ingredient Image" /></div>
     <div class="ingredient-details">
       <p>{{ name }}</p>
     </div>

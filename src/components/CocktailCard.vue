@@ -26,7 +26,7 @@ const toggleFav = () => {
       <span v-if="isFav">❤️</span>
       <span v-else>🤍</span>
     </div>
-    <div class="cocktail-image"><img :src="imageUrl" alt="Cocktail Image" /></div>
+    <div class="cocktail-image"><img :src="imageUrl" loading="lazy" alt="Cocktail Image" /></div>
     <div class="cocktail-details">
       <p>{{ name }}</p>
     </div>

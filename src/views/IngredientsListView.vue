@@ -21,7 +21,7 @@ const fetchDefaultIngredients = async () => {
     
     let formatted = []
     let ix = 0
-    for (let item of response.data.drinks.slice(0, 60)) {
+    for (let item of response.data.drinks) {
       formatted.push({
         idIngredient: ix,
         strIngredient: item.strIngredient1,

@@ -8,11 +8,11 @@ import IngredientDetailView from '@/views/IngredientDetailView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {path: '/', name: 'Accueil', component: HomeView},
-    {path: '/cocktails/', name:'Cocktails', component: CocktailsListView},
-    {path: '/cocktails/:id', name:'CocktailDetail', component: CocktailDetailView, props: true},
-    {path: '/ingredients/', name:'Ingredients', component: IngredientsListView },
-    {path: '/ingredients/:name', name:'IngredientDetail', component: IngredientDetailView, props: true} ],
+    { path: '/', name: 'Accueil', component: HomeView },
+    { path: '/cocktails/', name: 'Cocktails', component: () => import('@/views/CocktailsListView.vue') },
+    { path: '/cocktails/:id', name: 'CocktailDetail', component: () => import('@/views/CocktailDetailView.vue'), props: true },
+    { path: '/ingredients/', name: 'Ingredients', component: () => import('@/views/IngredientsListView.vue') },
+    { path: '/ingredients/:name', name: 'IngredientDetail', component: () => import('@/views/IngredientDetailView.vue'), props: true }],
 })
 
 export default router

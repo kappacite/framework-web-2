@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 
 export const useFavoritesStore = defineStore('favorites', () => {
-  // load from localStorage if exists
+
   const favorites = ref(JSON.parse(localStorage.getItem('favorite_cocktails') || '[]'))
 
   const toggleFavorite = (cocktail) => {
@@ -18,7 +18,6 @@ export const useFavoritesStore = defineStore('favorites', () => {
     return favorites.value.some(f => f.idDrink === idDrink)
   }
 
-  // save to localStorage on change
   watch(favorites, (newVal) => {
     localStorage.setItem('favorite_cocktails', JSON.stringify(newVal))
   }, { deep: true })

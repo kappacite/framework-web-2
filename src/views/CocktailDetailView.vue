@@ -29,7 +29,6 @@ const formattedInstructions = computed(() => {
   let text = cocktail.value.strInstructionsFR || cocktail.value.strInstructions
   if (!text) return []
 
-  // Hacky student way to handle numbers mixed with text without regex
   for (let i = 1; i <= 15; i++) {
      text = text.split(i + '.').join('. ')
      text = text.split(i + ')').join('. ')
